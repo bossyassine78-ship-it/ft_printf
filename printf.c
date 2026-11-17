@@ -35,8 +35,13 @@ int ft_printf(char const *format, ...)
             }
             else if (format[i] == '%')
             {
+                iff = ft_putchar('%');
+                if (iff == -1)
+                {
+                    va_end(ap);
+                    return (-1);
+                }
                 count++;
-                ft_putchar('%');
             }
             else if (format[i] == 'p')
             {
@@ -86,11 +91,11 @@ int main()
     n = ft_printf("%u|%x|%X\n", 42u, 42u, 42u);
     printf("return = %d (expected 9)\n", n);
 
-    n = ft_printf("%u|%x|%X\n", 0u, 0u, 0u);
-    printf("return = %d (expected 6)\n", n);
+    n = ft_printf("AYOUUUB\n");
+    printf("return = %d (expected 8)\n", n);
 
     n = ft_printf("%u|%x|%X\n", UINT_MAX, UINT_MAX, UINT_MAX);
     printf("return = %d (expected 29)\n", n);
     ft_printf("%%\n");
-    ft_printf("%");
+    ft_printf("A%%B\n");
 }
