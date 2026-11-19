@@ -1,8 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                       :::      ::::::::    */
+/*   ft_putchar.c                                      :+:      :+:    :+:    */
+/*                                                   +:+ +:+         +:+      */
+/*   By: username <username@student.42tokyo.jp>    #+#  +:+       +#+         */
+/*                                               +#+#+#+#+#+   +#+            */
+/*   Created: 2026/11/19 19:24:02 by username         #+#    #+#              */
+/*   Updated: 2026/11/19 19:24:03 by username        ###   ########.fr        */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libftprintf.h"
 
-int ft_putchar(char c)
+int	ft_putchar(char c)
 {
-    int x;
-    x = write(1,&c,1);
-    return (x);
+	int	x;
+
+	x = write(1, &c, 1);
+	return (x);
 }

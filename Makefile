@@ -2,11 +2,10 @@
 NAME = libftprintf.a
 CC = cc 
 CFLAGS = -Wall -Wextra -Werror
-CPPFLAGS = -Ilibft
 
 SRC = printf.c ft_putchar.c ft_putdec.c ft_putdecU.c \
     	ft_puthex.c ft_puthexU.c ft_putstrN.c for_p.c \
-			printR.c
+			printR.c final_print.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
@@ -14,7 +13,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	ar rcs $@ $^
 
-%.o: %.c libftprintf.h libft/libft.h
+%.o: %.c libftprintf.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
