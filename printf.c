@@ -6,29 +6,33 @@ int ft_printf(char const *format, ...)
     va_list ap;
     va_start(ap,format);
     int count ;
-    void *ptr ;
     int i;
-    int iff;
+    int check;
 
     i = 0;
-    (void)iff;
+    check = 0;
     count = 0;
     while (format[i])
     {   
         if (format[i] != '%' || (format[i] == '%' && format[i+1] == '\0'))
         {
-            iff = ft_putchar(format[i]);
-            if (iff == -1)
+            if (ft_putchar(format[i]) == -1)
             {
                 va_end(ap);
                 return (-1);
             }
-
             count++;
         }
         else if (format[i] == '%')
         {
-            
+            check = printR(format[i],ap);
+            if (check == -1)
+            {
+                va_end(ap);
+                return (-1);
+            }
+            else if (check != 0)
+                count += check;
         }
         i++;
     }

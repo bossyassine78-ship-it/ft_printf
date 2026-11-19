@@ -5,7 +5,8 @@ CFLAGS = -Wall -Wextra -Werror
 CPPFLAGS = -Ilibft
 
 SRC = printf.c ft_putchar.c ft_putdec.c ft_putdecU.c \
-    	ft_puthex.c ft_puthexU.c ft_putstr.c
+    	ft_puthex.c ft_puthexU.c ft_putstrN.c for_p.c \
+			printR.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

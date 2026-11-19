@@ -1,6 +1,6 @@
 #include "libftprintf.h"
 
-int ft_putstr(char *str)
+int ft_putstrN(char *str)
 {
     int i;
     int check;
@@ -9,8 +9,8 @@ int ft_putstr(char *str)
     check = 0;
     if (!str)
     {
-        if (write (1, "null", 6) == -1);
-            retun (-1);
+        if (write (1, "null", 6) == -1)
+            return (-1);
         return (6);
     }
     while (str[i])
