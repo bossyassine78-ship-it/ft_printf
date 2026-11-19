@@ -25,6 +25,7 @@ int ft_printf(char const *format, ...)
         }
         else if (format[i] == '%')
         {
+            i++;
             check = printR(format[i],ap);
             if (check == -1)
             {

@@ -5,7 +5,6 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <stdio.h>
-#include "libft.h"
 #include <unistd.h>
 
 int ft_printf(char const *format, ...);
