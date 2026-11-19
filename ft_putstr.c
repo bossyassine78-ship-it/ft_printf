@@ -1,25 +1,23 @@
 #include "libftprintf.h"
 
-int ft_putstr(void *str)
+int ft_putstr(char *str)
 {
-    char *c;
     int i;
+    int check;
 
     i = 0;
+    check = 0;
     if (!str)
     {
-        char *n = "(null)";
-        while (n[i])
-        {
-            ft_putchar(n[i]);
-            i++;
-        }
-        return (i);
+        if (write (1, "null", 6) == -1);
+            retun (-1);
+        return (6);
     }
-    c = str;
-    while (c[i])
+    while (str[i])
     {
-        ft_putchar(c[i]);
+        check = ft_putchar(str[i]);
+        if (check == -1)
+                return (-1);
         i++;
     }
     return (i);

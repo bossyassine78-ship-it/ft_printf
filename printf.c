@@ -15,7 +15,7 @@ int ft_printf(char const *format, ...)
     count = 0;
     while (format[i])
     {   
-        if (format[i] != '%' || (format[i] == '%' && format[i+1] == '\0') )
+        if (format[i] != '%' || (format[i] == '%' && format[i+1] == '\0'))
         {
             iff = ft_putchar(format[i]);
             if (iff == -1)
@@ -28,56 +28,7 @@ int ft_printf(char const *format, ...)
         }
         else if (format[i] == '%')
         {
-            i++;
-            if (format[i] == 'd' || format[i] == 'i')
-            {
-                count += ft_putdec(va_arg(ap,int));
-            }
-            else if (format[i] == '%')
-            {
-                iff = ft_putchar('%');
-                if (iff == -1)
-                {
-                    va_end(ap);
-                    return (-1);
-                }
-                count++;
-            }
-            else if (format[i] == 'p')
-            {
-                ptr = va_arg(ap, void *);
-                if (!ptr)
-                {
-                    count += ft_putstr("(nil)");
-                }
-                else
-                {
-                    ft_putstr("0x");
-                    count += 2;
-                    count += ft_puthex((unsigned long)ptr);
-                }
-            }
-            else if (format[i] == 'c')
-            {
-                count++;
-                ft_putchar(va_arg(ap,int));
-            }
-            else if (format[i] == 's')
-            {
-                count += ft_putstr(va_arg(ap,void *));
-            }
-            else if (format[i] == 'x')
-            {
-                count += ft_puthex(va_arg(ap,unsigned int));
-            }
-            else if (format[i] == 'X')
-            {
-                count += ft_puthexU(va_arg(ap,unsigned int));
-            }
-            else if (format[i] == 'u')
-            {
-                count += ft_putdecU(va_arg(ap,unsigned int));
-            }
+            
         }
         i++;
     }
