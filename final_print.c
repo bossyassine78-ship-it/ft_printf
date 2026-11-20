@@ -6,7 +6,7 @@
 /*   By: yael-hil <yael-hil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/19 22:42:53 by username          #+#    #+#             */
-/*   Updated: 2026/11/19 22:50:08 by yael-hil         ###   ########.fr       */
+/*   Updated: 2026/11/19 23:32:28 by yael-hil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ int final_print(char const *format, va_list *ap)
 		}
 		else if (format[i] == '%')
 		{
-			if (printr(format[i + 1], ap) != -1)
+            check = printr(format[i + 1], ap);
+			if (check != -1)
 				count += check;
 			else
 			{
