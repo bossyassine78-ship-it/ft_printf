@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   printR.c                                           :+:      :+:    :+:   */
+/*   check_arguments.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yael-hil <yael-hil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/11/19 19:25:27 by username          #+#    #+#             */
-/*   Updated: 2026/11/19 22:52:31 by yael-hil         ###   ########.fr       */
+/*   Created: 2026/11/19 19:25:27 by yael-hil          #+#    #+#             */
+/*   Updated: 2026/11/21 21:38:39 by yael-hil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libftprintf.h"
+#include "ft_printf.h"
 
-int	printr(char const p, va_list *ap)
+int	check_arguments(char const p, va_list *ap)
 {
 	if (p == 'd' || p == 'i')
 		return (ft_putdec(va_arg(*ap, int)));
@@ -27,12 +27,12 @@ int	printr(char const p, va_list *ap)
 	else if (p == 'c')
 		return (ft_putchar(va_arg(*ap, int)));
 	else if (p == 's')
-		return (ft_putstrn(va_arg(*ap, void *)));
+		return (ft_putstr(va_arg(*ap, char *)));
 	else if (p == 'x')
 		return (ft_puthex(va_arg(*ap, unsigned int)));
 	else if (p == 'X')
-		return (ft_puthexu(va_arg(*ap, unsigned int)));
+		return (ft_puthex_unsigned(va_arg(*ap, unsigned int)));
 	else if (p == 'u')
-		return (ft_putdecu(va_arg(*ap, unsigned int)));
+		return (ft_putdec_unsigned(va_arg(*ap, unsigned int)));
 	return (0);
 }

@@ -1,34 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putdecU.c                                       :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yael-hil <yael-hil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/11/19 19:24:10 by username          #+#    #+#             */
-/*   Updated: 2026/11/19 22:52:42 by yael-hil         ###   ########.fr       */
+/*   Created: 2026/11/19 19:24:53 by yael-hil          #+#    #+#             */
+/*   Updated: 2026/11/21 16:37:56 by yael-hil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libftprintf.h"
+#include "ft_printf.h"
 
-int	ft_putdecu(unsigned long nb)
+int	ft_putstr(char *str)
 {
-	char	*base;
-	int		count;
-	int		check;
+	int	i;
+	int	check;
 
-	base = "0123456789";
-	count = 0;
+	i = 0;
 	check = 0;
-	if (nb >= 10)
+	if (!str)
 	{
-		check = ft_putdecu(nb / 10);
+		if (write(1, "(null)", 6) == -1)
+			return (-1);
+		return (6);
+	}
+	while (str[i])
+	{
+		check = ft_putchar(str[i]);
 		if (check == -1)
 			return (-1);
-		count += check;
+		i++;
 	}
-	if (ft_putchar(base[nb % 10]) == -1)
-		return (-1);
-	return (count + 1);
+	return (i);
 }

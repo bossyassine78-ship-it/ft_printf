@@ -1,21 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                       :::      ::::::::    */
-/*   ft_putchar.c                                      :+:      :+:    :+:    */
-/*                                                   +:+ +:+         +:+      */
-/*   By: username <username@student.42tokyo.jp>    #+#  +:+       +#+         */
-/*                                               +#+#+#+#+#+   +#+            */
-/*   Created: 2026/11/19 19:24:02 by username         #+#    #+#              */
-/*   Updated: 2026/11/19 19:24:03 by username        ###   ########.fr        */
+/*                                                        :::      ::::::::   */
+/*   ft_putchar.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yael-hil <yael-hil@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/11/19 19:24:02 by yael-hil          #+#    #+#             */
+/*   Updated: 2026/11/21 16:57:10 by yael-hil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libftprintf.h"
+#include "ft_printf.h"
 
 int	ft_putchar(char c)
 {
-	int	x;
-
-	x = write(1, &c, 1);
-	return (x);
+	return (write(1, &c, 1));
 }
