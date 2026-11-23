@@ -4,118 +4,147 @@
 
 ## Description
 
-`ft_printf` is a reimplementation of the standard C `printf` function.
+`ft_printf` is my implementation of the mandatory subset of the C `printf` function. The project focuses on variadic arguments, format-string parsing, number conversion, and writing formatted output without implementing the buffering of the original `printf`.
 
-The project builds the static library `libftprintf.a`, which provides:
+It builds a static library named `libftprintf.a` and exposes:
 
 ```c
-int	ft_printf(const char *format, ...);
+int ft_printf(const char *format, ...);
 ```
 
-It handles the mandatory conversions:
+Supported conversions:
 
-- `%c` character
-- `%s` string
-- `%p` pointer address in lowercase hexadecimal
-- `%d` and `%i` signed decimal integer
-- `%u` unsigned decimal integer
-- `%x` lowercase hexadecimal
-- `%X` uppercase hexadecimal
-- `%%` percent sign
+| Conversion | Output |
+| --- | --- |
+| `%c` | One character |
+| `%s` | A string |
+| `%p` | A pointer address in hexadecimal |
+| `%d`, `%i` | A signed decimal integer |
+| `%u` | An unsigned decimal integer |
+| `%x` | Lowercase hexadecimal |
+| `%X` | Uppercase hexadecimal |
+| `%%` | A literal percent sign |
 
-Like `printf`, `ft_printf` returns the number of characters printed, or `-1` if a write operation fails.
+The function returns the number of characters written, or `-1` if a write fails. This repository implements the mandatory part only; formatting flags, field width, and precision are not supported.
 
 ## Instructions
 
-### Build the library
+### Compile
 
 ```sh
 make
 ```
 
-This creates `libftprintf.a` at the repository root.
+This creates `libftprintf.a` in the repository root using `cc`, `-Wall -Wextra -Werror`, and `ar`.
 
-### Use it in another program
-
-Include the project header and link the archive:
+### Use the library
 
 ```c
 #include "ft_printf.h"
 
-int	main(void)
+int main(void)
 {
-	ft_printf("value: %d\n", 42);
-	return (0);
+    ft_printf("Hello %s, the answer is %d\n", "42", 42);
+    return (0);
 }
 ```
 
+With the example saved as `main.c` in the repository root:
+
 ```sh
-cc main.c -I. libftprintf.a
-./a.out
+cc -Wall -Wextra -Werror main.c -I. libftprintf.a -o demo
+./demo
 ```
 
 ### Makefile rules
 
 ```sh
-make        # build libftprintf.a
-make clean  # remove object files
-make fclean # remove object files and the library
-make re     # rebuild everything
+make         # Build libftprintf.a
+make clean   # Remove object files
+make fclean  # Remove object files and the library
+make re      # Rebuild from scratch
 ```
 
-## Implementation choices
+## Algorithm and Data Structure
 
-### Format parsing
+**42 subject requirement (v12.1, Chapter V):**
 
-The format string is read once from left to right.
+> A detailed explanation and justification of the chosen algorithm and data structure must also be included.
 
-- Regular characters are written directly.
-- When `%` is encountered, the next character is sent to the conversion dispatcher.
-- The dispatcher chooses the suitable printing helper.
-- Every helper returns its printed-character count. Those counts are accumulated by `ft_printf`.
+### 1. One-pass format parsing
 
-This is a single-pass parser: the format string is not copied, split, or stored in an additional structure. Its time complexity is O(n), where n is the format string length, excluding the characters produced by conversions.
+I chose to read the format string **from left to right, one character at a time**, rather than copying or splitting it.
 
-### Variable arguments
+The flow follows the actual functions in this repository:
 
-`va_list` stores the traversal state of the variable arguments passed after `format`.
+1. `ft_printf` initializes a `va_list` with `va_start` and passes it to `print_argument`.
+2. `print_argument` keeps an index `i` for the format string and a running output count.
+3. For an ordinary character, `print_db` calls `ft_putchar`.
+4. For `%`, `print_db` looks at the following character. If it is supported, `check_arguments` selects the matching conversion helper.
+5. The helper writes its output and returns the number of characters written. `print_argument` adds that number to the total.
+6. If a helper reports `-1`, parsing stops and the error is returned to the caller.
 
-`ft_printf` initializes it with `va_start`, then passes it to the parsing and dispatch functions. Each relevant conversion retrieves its next argument with `va_arg` using the correct type:
+For an unsupported conversion, my parser writes the `%` literally and then processes the following character on the next iteration. A trailing `%` returns `-1`. Unsupported conversions are outside the mandatory conversion set.
 
-- `int` for `%c`, `%d`, and `%i`
-- `unsigned int` for `%u`, `%x`, and `%X`
-- `void *` for `%p`
-- `char *` for `%s`
+**Why this algorithm?** The input is already a string, so a simple index is enough to scan it. One pass keeps the control flow direct, avoids allocations and temporary format buffers, and makes each conversion easy to isolate and debug.
 
-No custom data structure is used. `va_list` is the only stateful object needed to walk through the changing argument list.
+### 2. Dispatching variadic arguments
 
-### Numeric conversions
+`ft_printf` creates one `va_list ap` and passes its address (`va_list *`) through the parser to `check_arguments`. This allows the dispatcher to advance the same argument list whenever a conversion consumes a value.
 
-The decimal and hexadecimal helpers use recursion.
+| Specifier | Type retrieved with `va_arg` | Helper |
+| --- | --- | --- |
+| `%c` | `int` | `ft_putchar` |
+| `%s` | `char *` | `ft_putstr` |
+| `%p` | `void *` | `for_p` |
+| `%d`, `%i` | `int` | `ft_putdec` |
+| `%u` | `unsigned int` | `ft_putdec_unsigned` |
+| `%x` | `unsigned int` | `ft_puthex` |
+| `%X` | `unsigned int` | `ft_puthex_unsigned` |
+| `%%` | No argument | Direct `write` |
 
-For a number in a base such as 10 or 16:
+**Why this choice?** The `<stdarg.h>` interface already provides the state needed to traverse variadic arguments. Passing a pointer to that state keeps argument consumption consistent across the helper functions, without a custom argument container.
 
-1. The function first prints `number / base` when the number is at least the base.
-2. It then prints the digit at `number % base`.
+### 3. Recursive number conversion
 
-Calling the recursive part first prints the most significant digit before the following ones. This avoids an extra buffer or a reverse operation. The recursion depth is limited to the number of digits.
+The decimal and hexadecimal functions use the same **division-and-remainder** idea:
 
-### Pointer conversion
+1. Choose a digit alphabet: `0123456789`, `0123456789abcdef`, or `0123456789ABCDEF`.
+2. If `number >= base`, recursively print `number / base` first.
+3. Print the final digit using `digits[number % base]`.
 
-The pointer helper prints `(nil)` for a null pointer. Otherwise, it writes the `0x` prefix and converts the pointer address to an `unsigned long` before printing it in lowercase hexadecimal.
+For example, printing `42` in base 10 first processes `4`, then prints `2`. For signed decimal values, `ft_putdec` prints `-` before converting the magnitude. The `%p` helper handles a null pointer as `(nil)`; otherwise, it prints `0x` followed by the lowercase hexadecimal representation of the address.
 
-### Error propagation
+**Why recursion?** Printing the quotient first naturally puts the most significant digit first. There is no need to build a reversed string, allocate a digit buffer, or reverse the result afterwards. The tradeoff is a small call stack whose depth depends on the number of digits.
 
-The lowest-level output function uses `write`. Each helper propagates `-1` immediately when writing fails, so `ft_printf` can also return `-1`.
+### 4. Writing, counting, and errors
+
+Output is written directly to standard output with `write` (usually through `ft_putchar`). Each printing helper returns the number of characters it actually wrote. Recursive helpers add the counts from deeper calls, and `print_argument` accumulates the final result.
+
+Every helper checks for failed writes and propagates `-1` upward immediately. There is **no printf-style output buffer**, which follows the mandatory project's constraints.
+
+**Why this design?** Keeping the count and error handling in the same helpers that write characters makes the return value straightforward to track. The tradeoff is more `write` calls than a buffered implementation, but buffering is not part of this project.
+
+### 5. Data structures and complexity
+
+No custom structure or heap allocation is needed:
+
+- `const char *format` refers to the input format string.
+- `int i` tracks the current format position; `int count` tracks written characters.
+- `va_list ap` maintains variadic argument traversal state.
+- Fixed digit alphabets are used to map remainders to printable characters.
+- Recursive calls use the call stack temporarily for numeric conversion.
+
+The parser itself scans each format character once, so its traversal cost is **O(n)** for a format string of length `n`, excluding the work of printing expanded arguments. Conversion work is proportional to the output digits/characters. The parser needs **O(1)** additional state, while number printing uses **O(d)** stack frames for `d` digits.
 
 ## Resources
 
-- `man 3 printf`
-- `man 3 stdarg`
-- `man 2 write`
-- ISO C standard, section 7.16: Variable arguments (`<stdarg.h>`)
-- System V AMD64 ABI, for background on how variadic arguments are passed on x86-64
+- [printf(3)](https://man7.org/linux/man-pages/man3/printf.3.html) — conversion syntax and return values.
+- [stdarg(3)](https://man7.org/linux/man-pages/man3/stdarg.3.html) — `va_list`, `va_start`, `va_arg`, and `va_end`.
+- [write(2)](https://man7.org/linux/man-pages/man2/write.2.html) — output and write errors.
+- ISO C, section 7.16 (`<stdarg.h>`) — variable argument handling.
+- System V AMD64 ABI — background on variadic calling conventions.
 
 ### AI use
 
-AI was used as a learning and review aid: to explain variadic arguments, `va_list`, compilation, Makefiles, recursion, and the causes of bugs encountered during development. The implementation was written, tested, and integrated by the author.
+AI was used as a learning and review tool to discuss variadic arguments, the `va_list` mechanism, recursion, Makefile behavior, parsing edge cases, and write-error propagation. It also helped review the implementation and organize this README. The final project code, design decisions, and evaluation readiness remain the author's responsibility.
