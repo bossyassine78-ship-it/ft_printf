@@ -1,32 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   print_argument.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: yael-hil <yael-hil@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/11/19 22:42:53 by yael-hil          #+#    #+#             */
-/*   Updated: 2026/11/21 17:14:44 by yael-hil         ###   ########.fr       */
+/*                                                       :::      ::::::::    */
+/*   print_argument.c                                  :+:      :+:    :+:    */
+/*                                                   +:+ +:+         +:+      */
+/*   By: username <username@student.42tokyo.jp>    #+#  +:+       +#+         */
+/*                                               +#+#+#+#+#+   +#+            */
+/*   Created: 2026/11/19 22:42:53 by username         #+#    #+#              */
+/*   Updated: 2026/11/23 20:03:35 by username        ###   ########.fr        */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
+static int	is_valid(char c)
+{
+	char	*v;
+	int		i;
+
+	v = "cspdiuxX%";
+	i = 0;
+	while (v[i])
+	{
+		if (v[i] == c)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 static int	print_db(char const *format, int *i, va_list *ap)
 {
-	int	check;
-
-	if (format[*i] != '%' || (format[*i] == '%' && format[*i + 1] == '\0'))
-	{
-		if (ft_putchar(format[*i]) == -1)
-			return (-1);
-		return (1);
-	}
+	if (format[*i] != '%')
+		return (ft_putchar(format[*i]));
 	(*i)++;
-	check = check_arguments(format[*i], ap);
-	if (check == -1)
+	if (format[*i] == '\0')
 		return (-1);
-	return (check);
+	if (is_valid(format[*i]))
+		return (check_arguments(format[*i], ap));
+	(*i)--;
+	return (ft_putchar('%'));
 }
 
 int	print_argument(char const *format, va_list *ap)
